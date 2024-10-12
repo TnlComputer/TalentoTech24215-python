@@ -19,14 +19,23 @@ while True:
     print(" 6.- Lista de productos con cantidad baja")
     print(" 7.- Salir")
 
-    opcion = int(input("Ingrese una opción (1-7): "))
+    try:
+        opcion = int(input("Ingrese una opción (1-7): "))
+    except ValueError:
+        print("Opción inválida. Por favor, ingrese un número entre 1 y 7.")
+        continue
 
     if opcion == 1:
         # Alta producto
         print("Has seleccionado 'Alta de productos nuevos'.")
         nombre_producto = input("Ingrese el nombre del producto: ")
-        precio_producto = float(input("Ingrese el precio del producto: "))
-        cantidad_producto = int(input("Ingrese la cantidad inicial del producto: "))
+        
+        try:
+            precio_producto = float(input("Ingrese el precio del producto: "))
+            cantidad_producto = int(input("Ingrese la cantidad inicial del producto: "))
+        except ValueError:
+            print("Datos inválidos. El precio debe ser un número decimal y la cantidad debe ser un número entero.")
+            continue
         
         # Agrego el producto a la lista
         nuevo_producto = {
@@ -42,14 +51,14 @@ while True:
     elif opcion == 2:
         # Consulto productos
         print("Has seleccionado 'Consulta de datos de productos'.")
-        id_producto = int(input("Ingrese el ID del producto a consultar: "))
+        try:
+            id_producto = int(input("Ingrese el ID del producto a consultar: "))
+        except ValueError:
+            print("ID inválido. Debe ser un número entero.")
+            continue
         
         # Buscamos el producto por ID
-        producto_encontrado = None
-        for producto in productos:
-            if producto["id"] == id_producto:
-                producto_encontrado = producto
-                break
+        producto_encontrado = next((producto for producto in productos if producto["id"] == id_producto), None)
         
         if producto_encontrado:
             print(f"Producto encontrado: {producto_encontrado}")
@@ -59,16 +68,21 @@ while True:
     elif opcion == 3:
         # Modifico cantidad de stock
         print("Has seleccionado 'Modificar la cantidad de stock'.")
-        id_producto = int(input("Ingrese el ID del producto a modificar: "))
+        try:
+            id_producto = int(input("Ingrese el ID del producto a modificar: "))
+        except ValueError:
+            print("ID inválido. Debe ser un número entero.")
+            continue
         
-        producto_encontrado = None
-        for producto in productos:
-            if producto["id"] == id_producto:
-                producto_encontrado = producto
-                break
+        producto_encontrado = next((producto for producto in productos if producto["id"] == id_producto), None)
         
         if producto_encontrado:
-            nueva_cantidad = int(input("Ingrese la nueva cantidad de stock: "))
+            try:
+                nueva_cantidad = int(input("Ingrese la nueva cantidad de stock: "))
+            except ValueError:
+                print("La cantidad de stock debe ser un número entero.")
+                continue
+            
             producto_encontrado["stock"] = nueva_cantidad
             print(f"El stock del producto '{producto_encontrado['nombre']}' ha sido actualizado a {nueva_cantidad} unidades.")
         else:
@@ -77,13 +91,13 @@ while True:
     elif opcion == 4:
         # Elimino producto
         print("Has seleccionado 'Dar de baja un producto'.")
-        id_producto = int(input("Ingrese el ID del producto a dar de baja: "))
+        try:
+            id_producto = int(input("Ingrese el ID del producto a dar de baja: "))
+        except ValueError:
+            print("ID inválido. Debe ser un número entero.")
+            continue
         
-        producto_encontrado = None
-        for producto in productos:
-            if producto["id"] == id_producto:
-                producto_encontrado = producto
-                break
+        producto_encontrado = next((producto for producto in productos if producto["id"] == id_producto), None)
         
         if producto_encontrado:
             productos.remove(producto_encontrado)
