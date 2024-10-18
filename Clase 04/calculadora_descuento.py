@@ -1,7 +1,10 @@
+#Entrada de los datos 
 precio = float(input("Ingrese el precio del producto: "))
-descuento = float(input("Ingrese el porcentaje del descuento: "))
+descuento = float(input("Porcentaje de descuento: "))
 
-monto_descuento = (precio * descuento) / 100
+#Procesamiento 
+monto_descuento = precio * descuento / 100
 precio_final = precio - monto_descuento
 
-print(f"El precio final con descuento es de: {precio_final} $")
+#Salida
+print(f"El precio final es de: {precio_final}")

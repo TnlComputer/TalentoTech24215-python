@@ -1,6 +1,10 @@
-precio_unit = float(input("Ingrese el precio del producto: "))
-cantidad = int(input("Ingrese la cantidad: "))
+#entrada de datos
+precio_unitario = float(input("ingrese el precio del producto: "))
+cantidad = int(input("ingrese la cantidad de prodcutos: "))
 
-precio_total = precio_unit * cantidad
+#procesamiento de los datos
+precio_total = precio_unitario * cantidad
+precio_redondeado = round(precio_total, 3)
 
-print(f"El precio total es de: {precio_total} $")
+#salida de los datos
+print(f"El costo total es de: $ {precio_redondeado}")
