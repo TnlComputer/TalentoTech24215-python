@@ -2,12 +2,12 @@
 productos = []
 
 # creo la funcio para que me agregue el id de cada producto
-# def generar_id():
+def generar_id():
 
-#     if productos:
-#         return productos[-1]["id"] + 1
-#     else:
-#         return 1
+    if productos:
+        return productos[-1]["id"] + 1
+    else:
+        return 1
 
 # Menú
 while True:
@@ -35,7 +35,7 @@ while True:
         
         # Agrego el producto a la lista
         nuevo_producto = {
-            # "id": generar_id(),
+            "id": generar_id(),
             "nombre": nombre_producto,
             "stock": cantidad_producto,
             "precio": precio_producto
