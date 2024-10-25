@@ -159,7 +159,7 @@ while True:
     
     elif opcion == 6:
         # Listo productos con stock menores a 10 unidades
-        print("Listado de productos con stock crítico")
+        print("Pproductos con stock crítico")
         productos_bajo_stock = [p for p in productos if p["stock"] < 10]
         
         if productos_bajo_stock:
@@ -168,9 +168,9 @@ while True:
             print("-" * (ancho_nombre) + "-" * (ancho_stock) + "-" * (ancho_precio))
 
             # Listado de productos en formato tabular
-            for producto in productos_bajo_stock:
-                nombre, stock, precio, = producto
-                print(f"{producto[nombre].capitalize():<{ancho_nombre}} {producto[stock]:<{ancho_stock}} {producto[precio]:<{ancho_precio}.2f}")
+            for producto_bajo in productos_bajo_stock:
+                nombre, stock, precio, = producto_bajo
+                print(f"{producto_bajo[nombre].capitalize():<{ancho_nombre}} {producto_bajo[stock]:<{ancho_stock}} {producto_bajo[precio]:<{ancho_precio}.2f}")
         else:
             print("No hay productos con stock bajo.")
     
