@@ -1,14 +1,5 @@
-# Lista para los productos
+# Lista vacia para los productos 
 productos = []
-
-# creo la funcio para que me agregue el id de cada producto
-def generar_id():
-
-    if productos:
-        return productos[-1]["id"] + 1
-    else:
-        return 1
-
 # Menú
 while True:
     print("\nMenu de gestión de Productos\n")
@@ -28,14 +19,43 @@ while True:
 
     if opcion == 1:
         # Alta producto
-        print("Has seleccionado 'Alta de productos nuevos'.")
-        nombre_producto = input("Ingrese el nombre del producto: ")
-        precio_producto = float(input("Ingrese el precio del producto: "))
-        cantidad_producto = int(input("Ingrese la cantidad inicial del producto: "))
+        caracteres_nombre_producto = 0
+        while caracteres_nombre_producto <= 1:
+          print("Has seleccionado 'Alta de productos nuevos'.")
+          nombre_producto = input("Ingrese el nombre del producto: ")
+          caracteres_nombre_producto = len(nombre_producto)
+          if len(nombre_producto) <= 1:  # chequeo que el nombre del producto sea de 2 o mas caracteres
+            print("El nombre del producto debe ser mayor a 1 caracteres.")
+          
+          #chequeo si el producto existe, antes de agregarlo a la lista
+          producto_encontrado = None
+          for producto in productos:
+              if producto["nombre"] == nombre_producto:
+                  producto_encontrado = producto
+                  break
+          
+          if producto_encontrado:
+            print(f"El Producto existente, ingrese otro producto.")
+            caracteres_nombre_producto = 0
         
+        precio_producto = 0
+        while precio_producto <= 0:
+          try:
+            precio_producto = float(input("Ingrese el precio del producto: "))
+          except ValueError:
+            print("Opción invalida, Por Favor, ingrese un valor mayor a 0.")
+            continue
+          
+        cantidad_producto = 0
+        while cantidad_producto <= 0: 
+          try:
+            cantidad_producto = int(input("Ingrese la cantidad inicial del producto: "))
+          except ValueError:
+            print("Opción invalida, Por Favor, ingrese un valor mayor a 0.")
+            continue
+
         # Agrego el producto a la lista
         nuevo_producto = {
-            "id": generar_id(),
             "nombre": nombre_producto,
             "stock": cantidad_producto,
             "precio": precio_producto
@@ -47,12 +67,12 @@ while True:
     elif opcion == 2:
         # Consulto productos
         print("Has seleccionado 'Consulta de datos de productos'.")
-        id_producto = int(input("Ingrese el ID del producto a consultar: "))
+        nombre_producto = input("Ingrese el producto a consultar: ")
         
-        # Buscamos el producto por ID
+        # Buscamos el producto por Nombre
         producto_encontrado = None
         for producto in productos:
-            if producto["id"] == id_producto:
+            if producto["nombre"] == nombre_producto:
                 producto_encontrado = producto
                 break
         
@@ -64,29 +84,41 @@ while True:
     elif opcion == 3:
         # Modifico cantidad de stock
         print("Has seleccionado 'Modificar la cantidad de stock'.")
-        id_producto = int(input("Ingrese el ID del producto a modificar: "))
+        nombre_producto = input("Ingrese el producto a modificar: ")
         
         producto_encontrado = None
         for producto in productos:
-            if producto["id"] == id_producto:
+            if producto["nombre"] == nombre_producto:
                 producto_encontrado = producto
                 break
         
         if producto_encontrado:
-            nueva_cantidad = int(input("Ingrese la nueva cantidad de stock: "))
-            producto_encontrado["stock"] = nueva_cantidad
-            print(f"El stock del producto '{producto_encontrado['nombre']}' ha sido actualizado a {nueva_cantidad} unidades.")
+          nueva_cantidad = 0
+          while nueva_cantidad <= 0: 
+            try:
+              nueva_cantidad = int(input("Ingrese la nueva cantidad de stock: "))
+            except ValueError:
+              print("Opción invalida, Por Favor, ingrese un valor mayor a 0.")
+            continue
+
+          producto_encontrado["stock"] = nueva_cantidad
+          print(f"El stock del producto '{producto_encontrado['nombre']}' ha sido actualizado a {nueva_cantidad} unidades.")
         else:
             print("Producto no encontrado.")
     
     elif opcion == 4:
         # Elimino producto
-        print("Has seleccionado 'Dar de baja un producto'.")
-        id_producto = int(input("Ingrese el ID del producto a dar de baja: "))
+        caracteres_producto_borrar = 0
+        while caracteres_producto_borrar <= 1:
+          print("Has seleccionado 'Dar de baja un producto'.")
+          nombre_producto = input("Ingrese el nombre del producto: ")
+          caracteres_producto_borrar = len(nombre_producto)
+          if len(nombre_producto) <= 1:  # chequeo que el nombre del producto sea de 2 o mas caracteres
+            print("El nombre del producto debe ser mayor a 1 caracteres.")
         
         producto_encontrado = None
         for producto in productos:
-            if producto["id"] == id_producto:
+            if producto["nombre"] == nombre_producto:
                 producto_encontrado = producto
                 break
         
