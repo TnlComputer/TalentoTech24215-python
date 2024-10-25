@@ -1,17 +1,11 @@
 # Lista vacia para los productos 
 productos = [
-  {"nombre": "SERVILLETAS", "stock": 10, "precio": 10.15},
-  {"nombre": "AZUCAR", "stock": 15, "precio": 20.0},
-  {"nombre": "TE", "stock": 20, "precio": 50.50},
-  {"nombre": "PAN", "stock": 12, "precio": 90},
-  {"nombre": "LECHUGA", "stock": 8, "precio": 1234.56}
+  {"nombre": "Servilletas", "stock": 10, "precio": 10.15},
+  {"nombre": "Azucar", "stock": 15, "precio": 20.0},
+  {"nombre": "Te", "stock": 20, "precio": 50.50},
+  {"nombre": "Pan", "stock": 12, "precio": 90},
+  {"nombre": "Lechuga", "stock": 8, "precio": 1234.56}
 ]
-
-# Definir los anchos de columna
-ancho_nombre =30
-ancho_stock = 10
-ancho_precio = 10
-
 # Menú
 while True:
     print("\nGestión de Productos\n")
@@ -34,7 +28,7 @@ while True:
         caracteres_nombre_producto = 0
         while caracteres_nombre_producto <= 1:
           print("Has seleccionado 'Alta de productos nuevos'.")
-          nombre_producto = input("Ingrese el nombre del producto: ").upper()
+          nombre_producto = input("Ingrese el nombre del producto: ")
           caracteres_nombre_producto = len(nombre_producto)
           if len(nombre_producto) <= 1:  # chequeo que el nombre del producto sea de 2 o mas caracteres
             print("El nombre del producto debe ser mayor a 1 caracteres.")
@@ -79,7 +73,7 @@ while True:
     elif opcion == 2:
         # Consulto productos
         print("Has seleccionado 'Consulta de datos de productos'.")
-        nombre_producto = input("Ingrese el producto a consultar: ").upper()
+        nombre_producto = input("Ingrese el producto a consultar: ")
         
         # Buscamos el producto por Nombre
         producto_encontrado = None
@@ -89,7 +83,7 @@ while True:
                 break
         
         if producto_encontrado:
-            print(f"Producto encontrado: {producto_encontrado}.capitalize()")
+            print(f"Producto encontrado: {producto_encontrado}")
         else:
             print("Producto no encontrado.")
     
@@ -114,7 +108,7 @@ while True:
             continue
 
           producto_encontrado["stock"] = nueva_cantidad
-          print(f"El stock del producto '{producto_encontrado['nombre']}capitalize()' ha sido actualizado a {nueva_cantidad} unidades.")
+          print(f"El stock del producto '{producto_encontrado['nombre']}' ha sido actualizado a {nueva_cantidad} unidades.")
         else:
             print("Producto no encontrado.")
     
@@ -123,7 +117,7 @@ while True:
         caracteres_producto_borrar = 0
         while caracteres_producto_borrar <= 1:
           print("Has seleccionado 'Dar de baja un producto'.")
-          nombre_producto = input("Ingrese el nombre del producto: ").upper()
+          nombre_producto = input("Ingrese el nombre del producto: ")
           caracteres_producto_borrar = len(nombre_producto)
           if len(nombre_producto) <= 1:  # chequeo que el nombre del producto sea de 2 o mas caracteres
             print("El nombre del producto debe ser mayor a 1 caracteres.")
@@ -136,7 +130,7 @@ while True:
         
         if producto_encontrado:
             productos.remove(producto_encontrado)
-            print(f"El producto '{producto_encontrado['nombre']}capitalize()' ha sido dado de baja.")
+            print(f"El producto '{producto_encontrado['nombre']}' ha sido dado de baja.")
         else:
             print("Producto no encontrado.")
     
@@ -144,33 +138,26 @@ while True:
         # Listo todos los productos
         print("Has seleccionado 'Listado completo de productos'.")
         if productos:
-            # Encabezado de la tabla
-            # print(f"\nProducto \tPrecio \tStock") # desfasa la tabulacion
-            print(f"\n{'Producto':<{ancho_nombre}} {'Precio':<{ancho_stock}} {'Stock':<{ancho_precio}}")
-            print("-" * (ancho_nombre) + "-" * (ancho_stock) + "-" * (ancho_precio))
-
-            # Listado de productos en formato tabular
             for producto in productos:
-                nombre, stock, precio = producto
-                # print(f"{producto[nombre]} \t{producto[stock]} \t{producto[precio]:.2f}") # desfasa la tabulacion
-                print(f"{producto[nombre].capitalize():<{ancho_nombre}} {producto[stock]:<{ancho_stock}} {producto[precio]:<{ancho_precio}.2f}")
+                print(producto)
         else:
             print("No hay productos registrados.")
     
     elif opcion == 6:
         # Listo productos con stock menores a 10 unidades
-        print("Listado de productos con stock crítico")
+        print("Has seleccionado 'Lista de productos con cantidad baja'.")
         productos_bajo_stock = [p for p in productos if p["stock"] < 10]
         
         if productos_bajo_stock:
-            # Encabezado de la tabla
-            print(f"\n{'Producto':<{ancho_nombre}} {'Precio':<{ancho_stock}} {'Stock':<{ancho_precio}}")
-            print("-" * (ancho_nombre) + "-" * (ancho_stock) + "-" * (ancho_precio))
+            print("Producto")
+            print("Cantidad")
+            print("Precio")
 
-            # Listado de productos en formato tabular
+
             for producto in productos_bajo_stock:
-                nombre, stock, precio, = producto
-                print(f"{producto[nombre].capitalize():<{ancho_nombre}} {producto[stock]:<{ancho_stock}} {producto[precio]:<{ancho_precio}.2f}")
+                print(producto['nombre'])
+                print(producto['stock'])
+                print(producto['precio'])
         else:
             print("No hay productos con stock bajo.")
     

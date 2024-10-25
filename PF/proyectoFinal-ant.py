@@ -221,107 +221,47 @@ def verificar_product(producto_nombre):
     conexion.close()
     return producto
 
-# def alta_producto():
-#     print("Has seleccionado 'Alta de productos nuevos'.")
-#     caracteres_nombre_producto = 0
-#     while True:
-#         while caracteres_nombre_producto <= 1:
-#           producto = input("Ingrese el nombre del producto (Enter para finalizar): ").strip().upper()
-#           if producto.upper() == "":
-#             break
-
-#         if len(producto) <= 1:  # chequeo que el nombre del producto sea de 2 o mas caracteres
-#           print("El nombre del producto debe ser mayor a 1 caracteres.")
-#           caracteres_nombre_producto = len(producto)
-#         # if not producto:
-#         #     print("El nombre del producto es obligatorio.")
-#         #     continue
-          
-#         resultado = verificar_product(producto)
-#         if resultado:
-#             print(f"El producto '{producto}' ya existe en la base de datos.")
-#             continue
-
-#         # Obtener el precio
-#         while True:
-#             try:
-#                 precio = float(input("Ingrese el precio del producto: "))
-#                 if precio <= 0:
-#                     print("El precio debe ser mayor a 0.")
-#                 else:
-#                     break
-#             except ValueError:
-#                 print(Fore.RED + "Datos inválidos. El precio debe ser un número decimal.")
-
-#         # Obtener la cantidad inicial
-#         while True:
-#             try:
-#                 cantidad = int(input("Ingrese la cantidad inicial del producto: "))
-#                 if cantidad <= 0:
-#                     print("La cantidad debe ser mayor a 0.")
-#                 else:
-#                     break
-#             except ValueError:
-#                 print(Fore.RED + "Datos inválidos. La cantidad debe ser un número entero.")
-
-#         # Insertar el producto en la base de datos
-#         try:
-#             conexion = sqlite3.connect('jgm24215.db')
-#             cursor = conexion.cursor()
-#             sql = "INSERT INTO products (product, price, stock) VALUES (?, ?, ?)"
-#             datos = (producto, precio, cantidad)
-#             cursor.execute(sql, datos)
-#             conexion.commit()
-#             conexion.close()
-
-#             print(f"Producto '{producto}' agregado con {cantidad} unidades a ${precio}.")
-#             # pausar()
-#         except sqlite3.Error as e:
-#             print(Fore.RED + f"Error al insertar el producto en la base de datos: {e}")
-#             continue
-
 def alta_producto():
     print("Has seleccionado 'Alta de productos nuevos'.")
-
     while True:
-        # Obtener el nombre del producto
         producto = input("Ingrese el nombre del producto (Enter para finalizar): ").strip().upper()
-        
-        if producto == "":  # Finalizar si el nombre está vacío
-            print("Finalizando proceso de alta de productos.")
+        if producto.upper() == "":
             break
 
-        if len(producto) <= 1:
-            print("El nombre del producto debe ser mayor a 1 caracteres.")
-            continue
+        # if not producto:
+        #     print("El nombre del producto es obligatorio.")
+        #     continue
 
-        if verificar_product(producto):
+        resultado = verificar_product(producto)
+        if resultado:
             print(f"El producto '{producto}' ya existe en la base de datos.")
             continue
 
-        # Obtener el precio del producto
+        # Obtener el precio
         while True:
             try:
                 precio = float(input("Ingrese el precio del producto: "))
-                if precio > 0:
+                if precio <= 0:
+                    print("El precio debe ser mayor a 0.")
+                else:
                     break
-                print("El precio debe ser mayor a 0.")
             except ValueError:
                 print(Fore.RED + "Datos inválidos. El precio debe ser un número decimal.")
 
-        # Obtener la cantidad inicial del producto
+        # Obtener la cantidad inicial
         while True:
             try:
                 cantidad = int(input("Ingrese la cantidad inicial del producto: "))
-                if cantidad > 0:
+                if cantidad <= 0:
+                    print("La cantidad debe ser mayor a 0.")
+                else:
                     break
-                print("La cantidad debe ser mayor a 0.")
             except ValueError:
                 print(Fore.RED + "Datos inválidos. La cantidad debe ser un número entero.")
 
         # Insertar el producto en la base de datos
         try:
-            conexion = sqlite3.connect('jgm24215.db')  # Usa la ruta completa para evitar problemas
+            conexion = sqlite3.connect('jgm24215.db')
             cursor = conexion.cursor()
             sql = "INSERT INTO products (product, price, stock) VALUES (?, ?, ?)"
             datos = (producto, precio, cantidad)
@@ -329,10 +269,12 @@ def alta_producto():
             conexion.commit()
             conexion.close()
 
-            print(f"Producto '{producto}' agregado con {cantidad} unidades a ${precio:.2f}.")
+            print(f"Producto '{producto}' agregado con {cantidad} unidades a ${precio}.")
+            # pausar()
         except sqlite3.Error as e:
             print(Fore.RED + f"Error al insertar el producto en la base de datos: {e}")
-            
+            continue
+
 def consultar_producto(producto_nombre):
     # Conectar a la base de datos
     conexion = sqlite3.connect('jgm24215.db')
@@ -345,7 +287,7 @@ def consultar_producto(producto_nombre):
     # Cerrar la conexión a la base de datos
     conexion.close()
     return producto
-
+ 
 def modificar_stock(producto_nombre, nuevo_stock):
     # Conectar a la base de datos
     conexion = sqlite3.connect('jgm24215.db')
