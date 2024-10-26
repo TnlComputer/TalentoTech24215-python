@@ -138,7 +138,8 @@ def modificar_stock():
             try:
                 nueva_cantidad = int(input("Ingrese la nueva cantidad de stock: "))
                 if nueva_cantidad <= 0:
-                    raise ValueError
+                    raise ValueError 
+                  # raise = se usa para indicar que se ha producido un error o una condición excepcional
             except ValueError:
                 print(Fore.RED + "Ingrese una cantidad válida mayor a 0.")
                 time.sleep(2)
