@@ -1,269 +1,156 @@
-# ####################################################################
-# # ATENCION *** Si la terminal no esta en la carpeta del proyecto,  #
-# # la base la crea incorrectamente y dara error al usar el programa #
-# ####################################################################
-
 import sqlite3
 import os
 import time
-from colorama import Fore, Style, init
+from colorama import Fore, init
 
 # Inicializar colorama
 init(autoreset=True)
 
 # Ruta de la base de datos
-db_path = os.path.join("database", "jgm24215.db")
+DB_PATH = os.path.join("database", "jgm24215.db")
+os.makedirs("database", exist_ok=True)
 
-# Crear la carpeta de la base de datos si no existe
-if not os.path.exists("database"):
-    os.makedirs("database")
-
-# Crear la tabla productos si no existe
+# Crear tabla en la base de datos si no existe
 def inicializar_bd():
-    with sqlite3.connect(db_path) as conn:
-        cursor = conn.cursor()
-        cursor.execute('''CREATE TABLE IF NOT EXISTS productos (
-                            id INTEGER PRIMARY KEY AUTOINCREMENT,
-                            nombre TEXT UNIQUE NOT NULL,
-                            stock INTEGER NOT NULL,
-                            precio REAL NOT NULL
-                        )''')
-        conn.commit()
+    with sqlite3.connect(DB_PATH) as conn:
+        conn.execute('''CREATE TABLE IF NOT EXISTS productos (
+                        id INTEGER PRIMARY KEY AUTOINCREMENT,
+                        nombre TEXT UNIQUE NOT NULL,
+                        stock INTEGER NOT NULL,
+                        precio REAL NOT NULL
+                    )''')
 
 # Limpiar pantalla
 def limpiar_pantalla():
     os.system('cls' if os.name == 'nt' else 'clear')
 
-# Verificar si un producto existe por nombre
-def producto_existe(nombre_producto):
-    with sqlite3.connect(db_path) as conn:
-        cursor = conn.cursor()
-        cursor.execute("SELECT * FROM productos WHERE nombre = ?", (nombre_producto,))
-        return cursor.fetchone() is not None
+# Función de entrada validada
+def entrada(mensaje, tipo=str, validacion=lambda x: True, error="Entrada inválida"):
+    while True:
+        try:
+            valor = tipo(input(mensaje).strip().upper())
+            if validacion(valor):
+                return valor
+            print(Fore.RED + error)
+        except ValueError:
+            print(Fore.RED + error)
 
-# Función para agregar producto
+# Verificar existencia de producto por nombre
+def producto_existe(nombre):
+    with sqlite3.connect(DB_PATH) as conn:
+        return conn.execute("SELECT 1 FROM productos WHERE nombre = ?", (nombre,)).fetchone() is not None
+
+# Alta de producto
 def alta_producto():
     print(Fore.CYAN + "\nAlta de productos\n")
-    while True:
-        nombre_producto = input("Ingrese el nombre del producto: ").strip().upper()
-        if not nombre_producto:
-            print(Fore.YELLOW + "Nombre vacío, regresando al menú principal.")
-            time.sleep(2)
-            limpiar_pantalla()
-            return
-        if len(nombre_producto) < 2:
-            print(Fore.RED + "El nombre del producto debe tener al menos 2 caracteres.")
-            time.sleep(2)
-            continue
-        if producto_existe(nombre_producto):
-            print(Fore.RED + "El producto ya existe. Ingrese otro nombre.")
-            time.sleep(2)
-            continue
-        break
+    nombre = entrada("Nombre del producto: ", validacion=lambda x: len(x) >= 2, error="El nombre debe tener al menos 2 caracteres.")
+    if producto_existe(nombre):
+        print(Fore.RED + "El producto ya existe.")
+        return
 
-    # Validar precio
-    while True:
-        try:
-            precio_producto = float(input("Ingrese el precio del producto: "))
-            if precio_producto <= 0:
-                raise ValueError
-            break
-        except ValueError:
-            print(Fore.RED + "Ingrese un precio válido mayor a 0.")
-            time.sleep(2)
+    precio = entrada("Precio del producto: ", tipo=float, validacion=lambda x: x > 0, error="Debe ser mayor a 0.")
+    cantidad = entrada("Cantidad inicial: ", tipo=int, validacion=lambda x: x > 0, error="Debe ser mayor a 0.")
 
-    # Validar cantidad
-    while True:
-        try:
-            cantidad_producto = int(input("Ingrese la cantidad inicial del producto: "))
-            if cantidad_producto <= 0:
-                raise ValueError
-            break
-        except ValueError:
-            print(Fore.RED + "Ingrese una cantidad válida mayor a 0.")
-            time.sleep(2)
-
-    # Insertar producto
-    with sqlite3.connect(db_path) as conn:
-        cursor = conn.cursor()
-        cursor.execute("INSERT INTO productos (nombre, stock, precio) VALUES (?, ?, ?)",
-                       (nombre_producto, cantidad_producto, precio_producto))
-        conn.commit()
-    print(Fore.GREEN + f"Producto '{nombre_producto.capitalize()}' agregado con éxito.")
-    time.sleep(2)
+    with sqlite3.connect(DB_PATH) as conn:
+        conn.execute("INSERT INTO productos (nombre, stock, precio) VALUES (?, ?, ?)", (nombre, cantidad, precio))
+    print(Fore.GREEN + f"Producto '{nombre.capitalize()}' agregado con éxito.")
     limpiar_pantalla()
 
-# Función para consultar producto
+# Consultar producto
 def consulta_producto():
-    print(Fore.CYAN + "\nConsulta de datos de productos\n")
-    nombre_producto = input("Ingrese el nombre del producto a consultar: ").strip().upper()
+    print(Fore.CYAN + "\nConsulta de productos\n")
+    nombre = entrada("Nombre del producto a consultar: ")
+    
+    with sqlite3.connect(DB_PATH) as conn:
+        producto = conn.execute("SELECT * FROM productos WHERE nombre = ?", (nombre,)).fetchone()
 
-    if not nombre_producto:
-        print(Fore.YELLOW + "Consulta cancelada, regresando al menú principal.")
-        time.sleep(2)
-        limpiar_pantalla()
-        return
-
-    with sqlite3.connect(db_path) as conn:
-        cursor = conn.cursor()
-        cursor.execute("SELECT * FROM productos WHERE nombre = ?", (nombre_producto,))
-        producto_encontrado = cursor.fetchone()
-
-    if producto_encontrado:
-        print(Fore.GREEN + f"Producto encontrado: Nombre: {producto_encontrado[1].capitalize()}, Stock: {producto_encontrado[2]}, Precio: ${producto_encontrado[3]:.2f}")
+    if producto:
+        print(Fore.GREEN + f"Producto: {producto[1]}, Stock: {producto[2]}, Precio: ${producto[3]:.2f}")
     else:
         print(Fore.RED + "Producto no encontrado.")
-    time.sleep(2)
+    input(Fore.YELLOW + "\nPresione Enter para continuar...")
     limpiar_pantalla()
 
-# Función para modificar stock
+# Modificar stock
 def modificar_stock():
-    print(Fore.CYAN + "\nModificar la cantidad de stock\n")
-    nombre_producto = input("Ingrese el nombre del producto a modificar: ").strip().upper()
-
-    if not nombre_producto:
-        print(Fore.YELLOW + "Modificación cancelada, regresando al menú principal.")
-        time.sleep(2)
-        limpiar_pantalla()
+    print(Fore.CYAN + "\nModificar Stock\n")
+    nombre = entrada("Nombre del producto: ")
+    
+    if not producto_existe(nombre):
+        print(Fore.RED + "Producto no encontrado.")
         return
 
-    with sqlite3.connect(db_path) as conn:
-        cursor = conn.cursor()
-        cursor.execute("SELECT * FROM productos WHERE nombre = ?", (nombre_producto,))
-        producto_encontrado = cursor.fetchone()
-
-    if producto_encontrado:
-        nueva_cantidad = 0
-        while nueva_cantidad <= 0:
-            try:
-                nueva_cantidad = int(input("Ingrese la nueva cantidad de stock: "))
-                if nueva_cantidad <= 0:
-                    raise ValueError 
-                  # raise = se usa para indicar que se ha producido un error o una condición excepcional
-            except ValueError:
-                print(Fore.RED + "Ingrese una cantidad válida mayor a 0.")
-                time.sleep(2)
-
-        with sqlite3.connect(db_path) as conn:
-            cursor = conn.cursor()
-            cursor.execute("UPDATE productos SET stock = ? WHERE nombre = ?", (nueva_cantidad, nombre_producto))
-            conn.commit()
-        print(Fore.GREEN + f"El stock del producto '{nombre_producto.capitalize()}' ha sido actualizado a {nueva_cantidad} unidades.")
-    else:
-        print(Fore.RED + "Producto no encontrado.")
-    time.sleep(2)
+    nueva_cantidad = entrada("Nueva cantidad de stock: ", tipo=int, validacion=lambda x: x > 0, error="Debe ser mayor a 0.")
+    
+    with sqlite3.connect(DB_PATH) as conn:
+        conn.execute("UPDATE productos SET stock = ? WHERE nombre = ?", (nueva_cantidad, nombre))
+    print(Fore.GREEN + f"Stock de '{nombre.capitalize()}' actualizado a {nueva_cantidad} unidades.")
+    input(Fore.YELLOW + "\nPresione Enter para continuar...")
     limpiar_pantalla()
 
-# Función para eliminar producto
+# Eliminar producto
 def eliminar_producto():
-    print(Fore.CYAN + "\Eliminar producto\n")
-    nombre_producto = input("Ingrese el nombre del producto a eliminar: ").strip().upper()
+    print(Fore.CYAN + "\nEliminar Producto\n")
+    nombre = entrada("Nombre del producto: ")
 
-    if not nombre_producto:
-        print(Fore.YELLOW + "Eliminación cancelada, regresando al menú principal.")
-        time.sleep(2)
-        limpiar_pantalla()
+    if not producto_existe(nombre):
+        print(Fore.RED + "Producto no encontrado.")
         return
 
-    with sqlite3.connect(db_path) as conn:
-        cursor = conn.cursor()
-        cursor.execute("SELECT * FROM productos WHERE nombre = ?", (nombre_producto,))
-        producto_encontrado = cursor.fetchone()
-
-    if producto_encontrado:
-        confirmacion = input(Fore.YELLOW + f"¿Está seguro que desea eliminar '{nombre_producto.capitalize()}'? (s/n): ").strip().lower()
-        if confirmacion != 's':
-            print(Fore.YELLOW + "Eliminación cancelada, regresando al menú principal.")
-            time.sleep(2)
-            limpiar_pantalla()
-            return
-        
-        with sqlite3.connect(db_path) as conn:
-            cursor = conn.cursor()
-            cursor.execute("DELETE FROM productos WHERE nombre = ?", (nombre_producto,))
-            conn.commit()
-        print(Fore.GREEN + f"El producto '{nombre_producto.capitalize()}' ha sido eliminado.")
+    if entrada(f"¿Eliminar '{nombre.capitalize()}'? (s/n): ", validacion=lambda x: x in ('S', 'N')) == 'S':
+        with sqlite3.connect(DB_PATH) as conn:
+            conn.execute("DELETE FROM productos WHERE nombre = ?", (nombre,))
+        print(Fore.GREEN + f"Producto '{nombre.capitalize()}' eliminado.")
     else:
-        print(Fore.RED + "Producto no encontrado.")
-    time.sleep(2)
+        print(Fore.YELLOW + "Eliminación cancelada.")
+    input(Fore.YELLOW + "\nPresione Enter para continuar...")
     limpiar_pantalla()
 
-# Función para listar todos los productos
-def listar_productos():
-    print(Fore.CYAN + "\nListado completo de productos\n")
-    with sqlite3.connect(db_path) as conn:
-        cursor = conn.cursor()
-        cursor.execute("SELECT * FROM productos")
-        productos = cursor.fetchall()
+# Listar productos
+def listar_productos(filtro=None, mensaje="Listado de Productos"):
+    print(Fore.CYAN + f"\n{mensaje}\n")
+    query = "SELECT * FROM productos" + (f" WHERE stock < {filtro}" if filtro else "")
+    
+    with sqlite3.connect(DB_PATH) as conn:
+        productos = conn.execute(query).fetchall()
 
     if productos:
-        print(f"\n{'Producto':<30} {'Stock':<10} {'Precio':<10}")
-        print("-" * 60)
+        print(Fore.LIGHTBLUE_EX + f"\n{'Producto':<30} {'Stock':<10} {'Precio':<10}")
+        print(Fore.LIGHTWHITE_EX + "-" * 60)
         for producto in productos:
             print(f"{producto[1].capitalize():<30} {producto[2]:<10} ${producto[3]:<10.2f}")
     else:
-        print(Fore.RED + "No hay productos registrados.")
-    time.sleep(2)
-    limpiar_pantalla()
-
-# Función para listar productos con stock bajo
-def listar_productos_bajo_stock():
-    print(Fore.CYAN + "\nProductos con stock crítico\n")
-    with sqlite3.connect(db_path) as conn:
-        cursor = conn.cursor()
-        cursor.execute("SELECT * FROM productos WHERE stock < 10")
-        productos_bajo_stock = cursor.fetchall()
-
-    if productos_bajo_stock:
-        print(f"\n{'Producto':<30} {'Stock':<10} {'Precio':<10}")
-        print("-" * 60)
-        for producto in productos_bajo_stock:
-            print(f"{producto[1].capitalize():<30} {producto[2]:<10} ${producto[3]:<10.2f}")
-    else:
-        print(Fore.RED + "No hay productos con stock bajo.")
-    time.sleep(2)
+        print(Fore.RED + "No hay productos registrados." if not filtro else "No hay productos con stock bajo.")
+    input(Fore.YELLOW + "\nPresione Enter para continuar...")
     limpiar_pantalla()
 
 # Menú principal
 def menu():
     inicializar_bd()
+    opciones = [
+        ("Alta de productos nuevos", alta_producto),
+        ("Consulta de productos", consulta_producto),
+        ("Modificar stock", modificar_stock),
+        ("Eliminar producto", eliminar_producto),
+        ("Listado completo", listar_productos),
+        ("Productos con stock bajo", lambda: listar_productos(filtro=10, mensaje="Productos con Stock Bajo")),
+        ("Salir", None)
+    ]
+
     while True:
         limpiar_pantalla()
         print(Fore.BLUE + "\tGestión de Productos\n")
-        print(Fore.LIGHTCYAN_EX + "1.- Alta de productos nuevos")
-        print(Fore.GREEN + "2.- Consulta de datos de productos")
-        print(Fore.YELLOW + "3.- Modificar la cantidad de stock")
-        print(Fore.LIGHTRED_EX + "4.- Dar de baja un producto")
-        print(Fore.GREEN + "5.- Listado completo de productos")
-        print(Fore.GREEN + "6.- Lista de productos con cantidad baja")
-        print(Fore.RED + "7.- Salir\n")
+        for i, (opcion, _) in enumerate(opciones, 1):
+            print(Fore.CYAN + f"{i}.- {opcion}")
 
-        try:
-            opcion = int(input("Ingrese una opción (1-7): "))
-        except ValueError:
-            print(Fore.RED + "Opción inválida. Por favor, ingrese un número entre 1 y 7.")
-            time.sleep(2)
-            continue
-
-        if opcion == 1:
-            alta_producto()
-        elif opcion == 2:
-            consulta_producto()
-        elif opcion == 3:
-            modificar_stock()
-        elif opcion == 4:
-            eliminar_producto()
-        elif opcion == 5:
-            listar_productos()
-        elif opcion == 6:
-            listar_productos_bajo_stock()
-        elif opcion == 7:
-            print(Fore.GREEN + "Saliste del sistema correctamente. Adiós.")
+        seleccion = entrada("Seleccione una opción (1-7): ", tipo=int, validacion=lambda x: 1 <= x <= len(opciones), error="Opción inválida.")
+        
+        if seleccion == len(opciones):
+            print(Fore.GREEN + "Saliendo del sistema. ¡Hasta luego!")
             break
         else:
-            print(Fore.RED + "Opción inválida. Por favor, seleccione una opción válida del menú.")
-            time.sleep(2)
+            opciones[seleccion - 1][1]()
 
 # Ejecutar menú
-if __name__ == "__main__":  # __name__ si no tiene modilo externo, toma el nombre de main
+if __name__ == "__main__":
     menu()
