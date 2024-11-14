@@ -4,7 +4,7 @@
 ## Profesor Nicolas
 ### Comision 24215
 
-## Alumno Jorge Martinez
+## Alumno: Jorge Martinez
 
 # Proyecto final integrador
 
@@ -16,14 +16,12 @@
 ###           Eliminar un producto
 ###           Reportes de todos los productos o de stock bajo
 
-
 ## Alta de productos
 ### El producto tiene que tener mas de 1 caracter, para podeer seguir el proceso de alta, 
 ### si no se ingresa nada y damos enter, volvemos al menu
 ### Despues pide la descripción del producto, si precio, cantidad y categoria
 ### al tener todos los datos requeridos se graba en la tabla. 
 ### todos los datos se graban en la tabla en mayusculas.
-
 
 ## Mostras Productos
 ### Sale un listado de todos los productos que se encuentran en la tabla productos
@@ -40,7 +38,7 @@
 
 ## Lista de productos con bajo stock
 ### Pide el ingreso de la cantida de stock minimo a mostrar, donde chequea que el stock sea menor o igual del valor ingresado por consola.
-### la funsion para mostrar los listados son el mismo, cmbiando solo el titulo dependiendo la opcion que elegimos
+### la funsion para mostrar los listados son el mismo, cambiando solo el titulo dependiendo la opcion que elegimos
 
 ## Salir
 #### Sale del sistema y al segundo limpia la pantalla
