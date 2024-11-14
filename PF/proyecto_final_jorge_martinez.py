@@ -9,6 +9,7 @@ init(autoreset=True)
 
 # Ruta de la base de datos
 DB_PATH = os.path.join("database", "jgm24215.db")
+#crea la carpeta si no existe
 os.makedirs("database", exist_ok=True)
 
 # Crear tabla en la base de datos si no existe
@@ -63,10 +64,12 @@ def alta_producto():
     cantidad = entrada("Cantidad inicial: ", tipo=int, validacion=lambda x: x > 0, error="Debe ser mayor a 0.")
     categoria = entrada("Categoría del producto: ")
 
+    #inserto en mi tabla el registro con los campos requeridos, que son todos
     with sqlite3.connect(DB_PATH) as conn:
         conn.execute("INSERT INTO productos (nombre, descripcion, stock, precio, categoria) VALUES (?, ?, ?, ?, ?)",
                      (nombre, descripcion, cantidad, precio, categoria))
     print(Fore.GREEN + f"Producto '{nombre.capitalize()}' agregado con éxito.")
+    
     limpiar_pantalla()
 
 # Consultar productos
@@ -92,10 +95,10 @@ def consulta_producto():
             productos = conn.execute(query, parametros).fetchall()
 
         if productos:
-            print(Fore.LIGHTBLUE_EX + f"\n{'ID':<5} {'Nombre':<20} {'Descripción':<30} {'Stock':<10} {'Precio':<11} {'Categoría':<15}")
-            print(Fore.LIGHTWHITE_EX + "-" * 100)
+            print(Fore.LIGHTBLUE_EX + f"\n{'ID':<5} {'Nombre':<20} {'Descripción':<50} {'Stock':<10} {'Precio':<11} {'Categoría':<15}")
+            print(Fore.LIGHTWHITE_EX + "-" * 110)
             for producto in productos:
-                print(f"{producto[0]:<5} {producto[1]:<20} {producto[2]:<30} {producto[3]:<10} ${producto[4]:<10.2f} {producto[5]:<15}")
+                print(f"{producto[0]:<5} {producto[1].capitalize():<20} {producto[2].capitalize():<50} {producto[3]:<10} ${producto[4]:<10.2f} {producto[5].capitalize():<15}")
         else:
             print(Fore.RED + "No se encontraron productos que coincidan con el término de búsqueda.")
 
@@ -111,12 +114,14 @@ def modificar_stock():
     if not nombre:
         return  # Regresar al menú principal
     
+    #chequeo si el producto existe en mi tabla
     if not producto_existe(nombre):
         print(Fore.RED + "Producto no encontrado.")
         return
 
     nueva_cantidad = entrada("Nueva cantidad de stock: ", tipo=int, validacion=lambda x: x > 0, error="Debe ser mayor a 0.")
     
+    #actualizo mi tabla con el nuevo stock, lo muestro y espero a que oprima una tecla para continuar.
     with sqlite3.connect(DB_PATH) as conn:
         conn.execute("UPDATE productos SET stock = ? WHERE nombre = ?", (nueva_cantidad, nombre))
     print(Fore.GREEN + f"Stock de '{nombre.capitalize()}' actualizado a {nueva_cantidad} unidades.")
@@ -134,6 +139,7 @@ def eliminar_producto():
         print(Fore.RED + "Producto no encontrado.")
         return
 
+    #despues de encontrar el producto, pregunto si realmente lo quiere eliminar, si es correcto elimino.
     if entrada(f"¿Eliminar '{nombre.capitalize()}'? (s/n): ", validacion=lambda x: x in ('S', 'N')) == 'S':
         with sqlite3.connect(DB_PATH) as conn:
             conn.execute("DELETE FROM productos WHERE nombre = ?", (nombre,))
@@ -155,7 +161,7 @@ def listar_productos(filtro=None, mensaje="Listado de Productos"):
         print(Fore.LIGHTBLUE_EX + f"\n{'ID':<5} {'Nombre':<20} {'Descripción':<50} {'Stock':<10} {'Precio':<11} {'Categoría':<15}")
         print(Fore.LIGHTWHITE_EX + "-" * 110)
         for producto in productos:
-            print(f"{producto[0]:<5} {producto[1]:<20} {producto[2]:<50} {producto[3]:<10} ${producto[4]:<10.2f} {producto[5]:<15}")
+            print(f"{producto[0]:<5} {producto[1].capitalize():<20} {producto[2].capitalize():<50} {producto[3]:<10} ${producto[4]:<10.2f} {producto[5].capitalize():<15}")
     else:
         print(Fore.RED + "No hay productos registrados." if not filtro else "No hay productos con stock bajo.")
     input(Fore.YELLOW + "\nPresione Enter para continuar...")
