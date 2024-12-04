@@ -1,4 +1,3 @@
-#importo librerias necesarias
 import sqlite3
 import os
 import time
@@ -114,14 +113,14 @@ def modificar_stock():
     if not nombre:
         return  # Regresar al menú principal
     
-    #chequeo si el producto existe en mi tabla
+    # Chequeo si el producto existe en mi tabla
     if not producto_existe(nombre):
         print(Fore.RED + "Producto no encontrado.")
         return
 
     nueva_cantidad = entrada("Nueva cantidad de stock: ", tipo=int, validacion=lambda x: x > 0, error="Debe ser mayor a 0.")
     
-    #actualizo mi tabla con el nuevo stock, lo muestro y espero a que oprima una tecla para continuar.
+    # Actualizo mi tabla con el nuevo stock, lo muestro y espero a que oprima una tecla para continuar.
     with sqlite3.connect(DB_PATH) as conn:
         conn.execute("UPDATE productos SET stock = ? WHERE nombre = ?", (nueva_cantidad, nombre))
     print(Fore.GREEN + f"Stock de '{nombre.capitalize()}' actualizado a {nueva_cantidad} unidades.")
@@ -139,7 +138,7 @@ def eliminar_producto():
         print(Fore.RED + "Producto no encontrado.")
         return
 
-    #despues de encontrar el producto, pregunto si realmente lo quiere eliminar, si es correcto elimino.
+    # Busco el producto, pregunto si realmente lo quiere eliminar, si es correcto lo elimino.
     if entrada(f"¿Eliminar '{nombre.capitalize()}'? (s/n): ", validacion=lambda x: x in ('S', 'N')) == 'S':
         with sqlite3.connect(DB_PATH) as conn:
             conn.execute("DELETE FROM productos WHERE nombre = ?", (nombre,))
@@ -167,7 +166,6 @@ def listar_productos(filtro=None, mensaje="Listado de Productos"):
     input(Fore.YELLOW + "\nPresione Enter para continuar...")
     limpiar_pantalla()
 
-# Menú principal
 def menu():
     inicializar_bd()
     opciones = [
@@ -182,7 +180,8 @@ def menu():
         ),
         ("Salir", None)
     ]
-
+    
+    # Menú principal
     while True:
         limpiar_pantalla()
         print(Fore.BLUE + "\tGestión de Productos\n")
@@ -192,13 +191,9 @@ def menu():
         seleccion = entrada("\nSeleccione una opción (1-7): ", tipo=int, validacion=lambda x: 1 <= x <= len(opciones), error="Opción inválida.")
         
         if seleccion == len(opciones):
-            print(Fore.GREEN + "\nSaliendo del sistema. ¡Hasta luego!")
+            print(Fore.GREEN + "\nSaliendo del sistema.")
             time.sleep(1)
             limpiar_pantalla()
             break
         else:
             opciones[seleccion - 1][1]()
-
-# Ejecutar menú
-if __name__ == "__main__":
-    menu()
