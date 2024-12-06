@@ -3,4 +3,5 @@ from funciones import inicializar_bd, alta_producto, listar_productos, modificar
 
 # Ejecutar menú
 if __name__ == "__main__":
+    limpiar_pantalla()
     menu()

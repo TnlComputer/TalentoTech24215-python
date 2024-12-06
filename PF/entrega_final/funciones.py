@@ -69,7 +69,7 @@ def alta_producto():
                      (nombre, descripcion, cantidad, precio, categoria))
     print(Fore.GREEN + f"Producto '{nombre.capitalize()}' agregado con éxito.")
     
-    limpiar_pantalla()
+    # limpiar_pantalla()
 
 # Consultar productos
 def consulta_producto():
@@ -108,6 +108,7 @@ def consulta_producto():
 
 # Modificar stock
 def modificar_stock():
+    listar_productos(pausa = False)
     print(Fore.CYAN + "\nModificar Stock\n")
     nombre = entrada("Nombre del producto (o presione Enter para cancelar): ")
     if not nombre:
@@ -118,17 +119,17 @@ def modificar_stock():
         print(Fore.RED + "Producto no encontrado.")
         return
 
-    nueva_cantidad = entrada("Nueva cantidad de stock: ", tipo=int, validacion=lambda x: x > 0, error="Debe ser mayor a 0.")
+    nueva_cantidad = entrada("Nueva cantidad de stock: ", tipo=int, validacion=lambda x: x >= 0, error="Debe ser o o mayor, 0 = 'Sin stock'.")
     
     # Actualizo mi tabla con el nuevo stock, lo muestro y espero a que oprima una tecla para continuar.
     with sqlite3.connect(DB_PATH) as conn:
         conn.execute("UPDATE productos SET stock = ? WHERE nombre = ?", (nueva_cantidad, nombre))
     print(Fore.GREEN + f"Stock de '{nombre.capitalize()}' actualizado a {nueva_cantidad} unidades.")
     input(Fore.YELLOW + "\nPresione Enter para continuar...")
-    limpiar_pantalla()
 
 # Eliminar producto
 def eliminar_producto():
+    listar_productos(pausa = False)
     print(Fore.CYAN + "\nEliminar Producto\n")
     nombre = entrada("Nombre del producto (o presione Enter para cancelar): ")
     if not nombre:
@@ -149,7 +150,7 @@ def eliminar_producto():
     limpiar_pantalla()
 
 # Listar productos
-def listar_productos(filtro=None, mensaje="Listado de Productos"):
+def listar_productos(filtro=None, mensaje="Listado de Productos", pausa=True):
     print(Fore.CYAN + f"\n{mensaje}")
     query = "SELECT * FROM productos" + (f" WHERE stock <= {filtro}" if filtro else "")
     
@@ -163,8 +164,8 @@ def listar_productos(filtro=None, mensaje="Listado de Productos"):
             print(f"{producto[0]:<5} {producto[1].capitalize():<20} {producto[2].capitalize():<50} {producto[3]:<10} ${producto[4]:<10.2f} {producto[5].capitalize():<15}")
     else:
         print(Fore.RED + "No hay productos registrados." if not filtro else "No hay productos con stock bajo.")
-    input(Fore.YELLOW + "\nPresione Enter para continuar...")
-    limpiar_pantalla()
+    if pausa:
+      input(Fore.YELLOW + "\nPresione Enter para continuar...")
 
 def menu():
     inicializar_bd()
