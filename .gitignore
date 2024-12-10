@@ -25,6 +25,13 @@ yarn-error.log
 /.*avi*
 /.*rar*
 /.*zip*
+/**/.*avi*
+/**/.*rar*
+/**/.*zip*
+pfi.zip
+.gitignore
+*.avi
+*.rar
 
 # personal files to ignore
 /.___docs
