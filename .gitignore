@@ -22,6 +22,9 @@ yarn-error.log
 /.vscode
 /.*mp4*
 /**/.*mp4*
+/.*avi*
+/.*rar*
+/.*zip*
 
 # personal files to ignore
 /.___docs
