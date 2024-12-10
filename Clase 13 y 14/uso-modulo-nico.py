@@ -1,0 +1,3 @@
+import moduloNico
+
+moduloNico.saludar()
