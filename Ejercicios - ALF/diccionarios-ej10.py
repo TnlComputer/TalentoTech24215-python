@@ -16,40 +16,10 @@ Mostrar lista de todos los clientes de la base datos con su NIF y nombre.
 Mostrar la lista de clientes preferentes de la base de datos con su NIF y nombre.
 Terminar el programa.
 """
+
 clientes = {
-    "cliente01" : ["Nicolas", "Capital federal", "1111111111", "ejemplo@gmail.com", True],
-    "cliente02" : ["Agustin", "Capital federal", "1111111234", "ejemplo2@gmail.com", False]
+    "cliente01" : ["Nicolas", "Capital federal", "1111111111", "ejemplo@gmail.com", True]
 }
-
-
-def buscar_cliente(codigo = "default") :
-    if codigo in clientes:
-        print(f"El codigo: {codigo} pertenece al usuario: \nNombre: {clientes[codigo][0]}\nDireccion: {clientes[codigo][1]}\nTelefono: {clientes[codigo][2]}\nMail: {clientes[codigo][3]}\nPreferente: {clientes[codigo][4]}")
-    else:
-        print("El usuario no existe o  codigo erroneo")
-
-def listar_clientes(clientes = {}) :
-    if len(clientes) > 0:  
-        print(f"{"Codigo":<20}{"Nombre":<20}{"Direccion":<20}{"Telefono":<20}{"Mail":<20}{"Preferencial":<20}")
-        print(f"{"-"*120}")
-        for codigo, usuario in clientes.items():
-            print(f"{codigo:<20}{usuario[0]:<20}{usuario[1]:<20}{usuario[2]:<20}{usuario[3]:<20}{"Si" if usuario[4] else "No":<20}")
-    else:
-        print("Lista de clientes vacia")
-
-def filtrar_preferentes(clientes = {}):
-    clientes_preferentes = {}
-    if len(clientes) > 0:
-        for codigo, usuario in clientes.items():
-            if usuario[4]:
-                clientes_preferentes[codigo] = usuario
-    else:
-        print("Lista de clientes vacia")
-    if len(clientes_preferentes) > 0:
-            listar_clientes(clientes_preferentes)
-    else:
-            print("No hay clientes preferentes")
-
 
 
 manejo_menu = True
@@ -81,13 +51,13 @@ while manejo_menu:
             print(f"\tTelefono: {cliente_eliminado[2]}\nMail: {cliente_eliminado[3]}")
         else:
             print("El usuario no existe o  codigo erroneo")
+        print()
     elif opcion == "3":
-        codigo = input("Ingrese el codigo del usuario a buscar: ")
-        buscar_cliente(codigo)
+        print()
     elif opcion == "4":
-        listar_clientes(clientes)
+        print()
     elif opcion == "5":
-        filtrar_preferentes(clientes) 
+        print()
     elif opcion == "6":
         print("Finalizando...")
         manejo_menu = False
